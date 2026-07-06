@@ -7,7 +7,7 @@ name = "faceberg"
 dynamic = ["version"]
 description = "Bridge HuggingFace datasets with Apache Iceberg"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [
     {name = "Krisztian Szucs", email = "kszucs@users.noreply.github.com"},
@@ -18,20 +18,19 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "pyiceberg>=0.10.0",
-    "huggingface_hub>=1.10.0",
-    "datasets>=2.0.0",  # For dataset metadata discovery
-    "fsspec>=2023.1.0",
+    "pyiceberg>=0.11.1",
+    "huggingface_hub>=1.22.0",  # For HF Buckets support (create_bucket, batch_bucket_files)
+    "datasets>=5.0.0",  # For dataset metadata discovery
+    "fsspec>=2026.4.0",
     "click>=8.0.0",
     "pyyaml>=6.0",
     "rich>=13.0.0",  # For nice CLI output
-    "pyarrow>=21.0.0",
+    "pyarrow>=24.0.0",
     "litestar>=2.0.0",  # REST API server
     "uvicorn[standard]>=0.27.0",  # For HTML landing page
     "uuid-utils>=0.9.0",  # For UUIDv7 support (Python <3.13)
