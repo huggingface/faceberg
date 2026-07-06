@@ -237,6 +237,7 @@ To make your catalog private, set your HuggingFace Space to private.
 ## Next Steps
 
 - [Local Catalogs](local.qmd) — Use local catalogs for testing
+- [Buckets](buckets.qmd) — Store catalog metadata in HF Buckets (S3-like, no git history)
 - [Architecture](design.qmd) — Understand how Faceberg works
-- [DuckDB Integration](integrations/duckdb.qmd) — Advanced DuckDB queries
-- [Pandas Integration](integrations/pandas.qmd) — Load data into DataFrames
+- [DuckDB Integration](duckdb.qmd) — Advanced DuckDB queries
+- [Pandas Integration](pandas.qmd) — Load data into DataFrames

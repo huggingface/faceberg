@@ -7,6 +7,7 @@ from huggingface_hub.utils import disable_progress_bars
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from ._version import __version__
 from .catalog import RemoteCatalog, catalog
 from .config import Config
 from .pretty import progress_bars, progress_tree, tree
@@ -18,7 +19,7 @@ console = Console()
 
 @click.group()
 @click.argument("uri", type=str)
-@click.version_option(version="0.1.0", prog_name="faceberg")
+@click.version_option(version=__version__, prog_name="faceberg")
 @click.option(
     "--token",
     "-t",

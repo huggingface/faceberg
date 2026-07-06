@@ -1,0 +1,78 @@
+---
+title: "HuggingFace Buckets"
+description: "Use HF Buckets as a lightweight, S3-like catalog storage backend"
+---
+
+HuggingFace Buckets are an S3-like storage backend on the Hub — no git history,
+no LFS, no repo-level revisions. Faceberg can store catalog metadata directly in
+a bucket using `hf://buckets/org/name` URIs.
+
+## When to Use Buckets
+
+| | HF Spaces | HF Datasets | HF Buckets |
+|---|---|---|---|
+| Auto-deployed REST server | Yes | No | No |
+| Git history / revisions | Yes | Yes | No |
+| Best for | Sharing a catalog publicly with a live endpoint | Versioned catalog metadata | Fast, disposable, or high-churn metadata storage |
+
+Buckets skip git semantics entirely: writes go straight to storage via
+`batch_bucket_files()`, and reads via `download_bucket_files()`. That makes
+them a good fit for catalogs that get synced frequently, or where you don't
+need a hosted REST endpoint (e.g. metadata you'll query with a locally-run
+`faceberg serve`, or from a Python process on the same machine).
+
+## Create a Bucket Catalog
+
+```bash
+export HF_TOKEN=your_huggingface_token
+
+faceberg hf://buckets/user/mycatalog init
+faceberg hf://buckets/user/mycatalog add stanfordnlp/imdb
+faceberg hf://buckets/user/mycatalog list
+```
+
+## Python API
+
+```python
+import os
+from faceberg import catalog
+
+cat = catalog("hf://buckets/user/mycatalog", hf_token=os.environ.get("HF_TOKEN"))
+cat.init()
+cat.add_dataset("default.imdb", "stanfordnlp/imdb", config="plain_text")
+
+table = cat.load_table("default.imdb")
+df = table.scan(limit=100).to_pandas()
+```
+
+## Querying a Bucket Catalog
+
+Buckets don't auto-deploy a REST endpoint like Spaces do. To query with
+DuckDB or another Iceberg REST client, run a local server against the bucket
+catalog:
+
+```bash
+faceberg hf://buckets/user/mycatalog serve --port 8181
+```
+
+```python
+import duckdb
+
+conn = duckdb.connect()
+conn.execute("INSTALL iceberg; LOAD iceberg")
+conn.execute("ATTACH 'http://localhost:8181' AS cat (TYPE ICEBERG, AUTHORIZATION_TYPE 'none')")
+
+result = conn.execute("SELECT * FROM cat.default.imdb LIMIT 5").fetchdf()
+```
+
+Or skip the server and use `quack` directly:
+
+```bash
+faceberg hf://buckets/user/mycatalog quack
+```
+
+## Next Steps
+
+- [Home](index.qmd) — Deploy a catalog to HuggingFace Spaces
+- [Local Catalogs](local.qmd) — Use local catalogs for testing
+- [Architecture](design.qmd) — Understand how Faceberg works

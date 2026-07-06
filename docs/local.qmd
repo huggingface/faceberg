@@ -214,5 +214,5 @@ with tempfile.TemporaryDirectory() as tmpdir:
 ## Next Steps
 
 - [Home](index.qmd) — Deploy to HuggingFace Hub
-- [DuckDB Integration](integrations/duckdb.qmd) — Query with SQL
-- [Pandas Integration](integrations/pandas.qmd) — Work with DataFrames
+- [DuckDB Integration](duckdb.qmd) — Query with SQL
+- [Pandas Integration](pandas.qmd) — Work with DataFrames

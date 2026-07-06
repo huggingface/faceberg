@@ -59,6 +59,13 @@ HuggingFace Hub
 
 **No data is copied** — only metadata is created. Query with DuckDB, PyIceberg, Spark, or any Iceberg-compatible tool.
 
+Catalog metadata can also live in a [HuggingFace Bucket](https://faceberg.kszucs.dev/buckets.html) (`hf://buckets/org/name`) instead of a Space — an S3-like storage backend with no git history, useful for catalogs that don't need a hosted REST endpoint:
+
+```bash
+faceberg hf://buckets/user/mycatalog init
+faceberg hf://buckets/user/mycatalog add stanfordnlp/imdb
+```
+
 ## Python API
 
 ```python
@@ -90,8 +97,9 @@ result = conn.execute("SELECT * FROM cat.stanfordnlp.imdb LIMIT 5").fetchdf()
 
 - [Getting Started](https://faceberg.kszucs.dev/) — Full quickstart guide
 - [Local Catalogs](https://faceberg.kszucs.dev/local.html) — Use local catalogs for development
-- [DuckDB Integration](https://faceberg.kszucs.dev/integrations/duckdb.html) — Advanced SQL queries
-- [Pandas Integration](https://faceberg.kszucs.dev/integrations/pandas.html) — Load into DataFrames
+- [Buckets](https://faceberg.kszucs.dev/buckets.html) — Store catalog metadata in HF Buckets
+- [DuckDB Integration](https://faceberg.kszucs.dev/duckdb.html) — Advanced SQL queries
+- [Pandas Integration](https://faceberg.kszucs.dev/pandas.html) — Load into DataFrames
 
 ## Development
 

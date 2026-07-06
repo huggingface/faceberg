@@ -49,8 +49,12 @@ Both your data sources (HF Datasets) and your catalog (HF Spaces) live on Huggin
 | Component | Location |
 |-----------|----------|
 | Original data | HuggingFace Datasets |
-| Iceberg metadata | HuggingFace Spaces |
-| REST API | Auto-deployed Space |
+| Iceberg metadata | HuggingFace Spaces, Datasets, or Buckets |
+| REST API | Auto-deployed Space (Buckets require running `faceberg serve` yourself) |
+
+Spaces and Datasets store metadata with full git history; [Buckets](buckets.qmd)
+are S3-like — no git history, no LFS — which makes them a lighter-weight option
+for catalogs that don't need a hosted REST endpoint or revision history.
 
 ### Standard Iceberg Protocol
 
