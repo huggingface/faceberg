@@ -112,15 +112,19 @@ def sync(ctx, table_name, tree_view):
     checks if dataset revision has changed and skips if already up-to-date.
 
     Example:
-        faceberg --config=faceberg.yml sync
-        faceberg --config=faceberg.yml sync namespace1.table1
+        faceberg catalog.db sync
+        faceberg catalog.db sync namespace1.table1
     """
     catalog = ctx.obj["catalog"]
 
     # Build tree view with tracking
     config = catalog.config()
 
-    if tree_view:
+    if table_name:
+        identifier = tuple(table_name.split("."))
+        with progress_bars(config, console, [identifier]) as progress_callback:
+            catalog.sync_dataset(identifier, progress_callback=progress_callback)
+    elif tree_view:
         with progress_tree(config, console) as progress_callback:
             catalog.sync_datasets(progress_callback=progress_callback)
     else:
@@ -213,7 +217,7 @@ def list_tables(ctx):
     """List all tables in catalog.
 
     Example:
-        faceberg --config=faceberg.yml list
+        faceberg catalog.db list
     """
     catalog = ctx.obj["catalog"]
     config = catalog.config()
@@ -232,7 +236,7 @@ def info(ctx, table_name):
     Displays schema, partitioning, current snapshot, and data location.
 
     Example:
-        faceberg --config=faceberg.yml info default.dataset1
+        faceberg catalog.db info default.dataset1
     """
     catalog = ctx.obj["catalog"]
 
@@ -259,8 +263,8 @@ def scan(ctx, table_name, limit):
     the first few rows as a quick verification that the table is readable.
 
     Example:
-        faceberg --config=faceberg.yml scan default.imdb
-        faceberg --config=faceberg.yml scan default.imdb --limit=10
+        faceberg catalog.db scan default.imdb
+        faceberg catalog.db scan default.imdb --limit=10
     """
     catalog = ctx.obj["catalog"]
 

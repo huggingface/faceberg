@@ -156,7 +156,7 @@ Then run SQL:
 
 ```sql
 SHOW ALL TABLES;
-SELECT * FROM iceberg_catalog.default.imdb LIMIT 5;
+SELECT * FROM faceberg.default.imdb LIMIT 5;
 ```
 
 ## Query Without REST Server

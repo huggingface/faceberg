@@ -58,6 +58,21 @@ faceberg user/mycatalog add stanfordnlp/imdb --table default.movies
 faceberg user/mycatalog list
 ```
 
+## Table Info & Removal
+
+Show a table's schema and location:
+
+```bash
+faceberg user/mycatalog info stanfordnlp.imdb
+```
+
+Remove a table or an empty namespace:
+
+```bash
+faceberg user/mycatalog remove stanfordnlp.imdb
+faceberg user/mycatalog remove stanfordnlp --yes
+```
+
 ## Query Data
 
 Scan a table to see sample data:
@@ -82,7 +97,7 @@ SHOW ALL TABLES;
 
 -- Query the IMDB dataset
 SELECT label, substr(text, 1, 100) as preview
-FROM iceberg_catalog.stanfordnlp.imdb
+FROM faceberg.stanfordnlp.imdb
 LIMIT 10;
 
 -- Exit
@@ -156,7 +171,8 @@ The catalog object supports standard Iceberg operations:
 
 | Method | Description |
 |--------|-------------|
-| `init()` | Initialize the catalog storage |
+| `init(config)` | Initialize the catalog storage, optionally with a `Config` |
+| `config()` | Load the catalog's `faceberg.yml` configuration |
 | `add_dataset(identifier, repo, config)` | Add a HuggingFace dataset as an Iceberg table |
 | `sync_dataset(identifier)` | Sync a single dataset (update if source changed) |
 | `sync_datasets()` | Sync all datasets in the catalog |
@@ -164,6 +180,7 @@ The catalog object supports standard Iceberg operations:
 | `list_tables(namespace)` | List tables in a namespace |
 | `list_namespaces()` | List all namespaces |
 | `drop_table(identifier)` | Remove a table from the catalog |
+| `drop_namespace(identifier)` | Remove an empty namespace from the catalog |
 | `table_exists(identifier)` | Check if a table exists |
 
 ## How It Works

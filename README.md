@@ -30,7 +30,7 @@ faceberg user/mycatalog quack
 
 ```sql
 SELECT label, substr(text, 1, 100) as preview
-FROM iceberg_catalog.stanfordnlp.imdb
+FROM faceberg.stanfordnlp.imdb
 LIMIT 10;
 ```
 
