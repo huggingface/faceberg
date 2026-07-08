@@ -13,9 +13,22 @@ All notable changes to this project are documented here. Format loosely follows
   reads. See [docs/buckets.qmd](docs/buckets.qmd).
 - `docs/buckets.qmd` — new documentation page for the Buckets backend, linked
   from the site nav, README, and the architecture/local-catalog docs.
+- Expanded `README.md` with a full CLI command reference, a `faceberg.yml`
+  config example, Local Catalogs/Buckets sections, a Python API method table,
+  and a `just`-based development workflow, plus a note that the project is
+  alpha-quality software.
 
 ### Fixed
 
+- `faceberg <catalog> sync <table>` ignored the `<table>` argument and always
+  resynced every dataset in the catalog; it now syncs only the requested
+  table.
+- Quickstart SQL examples in `README.md` and `docs/*.qmd` referenced the
+  `iceberg_catalog` alias, but `faceberg quack`/`serve` actually attach the
+  catalog as `faceberg`, so the copy-pasted queries failed. Also documented
+  the previously-undocumented `info`/`remove` commands and removed a
+  nonexistent REST create-table endpoint and dead `ARCHITECTURE.md` link from
+  the docs.
 - `faceberg --version` reported a hardcoded `0.1.0` instead of the installed
   package version; it now reads from the generated `_version.py`.
 - Cross-links to the DuckDB/Pandas integration docs pointed at a nonexistent
