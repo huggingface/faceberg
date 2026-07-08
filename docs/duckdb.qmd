@@ -48,12 +48,12 @@ SHOW ALL TABLES;
 
 -- Query data
 SELECT label, substr(text, 1, 100) as preview
-FROM iceberg_catalog.default.imdb
+FROM faceberg.default.imdb
 LIMIT 10;
 
 -- Aggregate queries
 SELECT label, COUNT(*) as count
-FROM iceberg_catalog.default.imdb
+FROM faceberg.default.imdb
 GROUP BY label;
 
 -- Exit

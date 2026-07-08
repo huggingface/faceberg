@@ -168,16 +168,15 @@ default:
 
 ## REST API Endpoints
 
-The Space exposes standard Iceberg REST endpoints:
+The Space exposes a read-only subset of the Iceberg REST catalog spec:
 
 | Endpoint | Purpose |
 |----------|---------|
 | `GET /v1/config` | Catalog configuration |
 | `GET /v1/namespaces` | List namespaces |
+| `GET /v1/namespaces/{ns}` | Load namespace properties |
+| `HEAD /v1/namespaces/{ns}` | Check if a namespace exists |
 | `GET /v1/namespaces/{ns}/tables` | List tables |
 | `GET /v1/namespaces/{ns}/tables/{table}` | Load table metadata |
-| `POST /v1/namespaces/{ns}/tables/{table}` | Create table |
 
-## Technical Details
-
-For implementation details, see [ARCHITECTURE.md](https://github.com/kszucs/faceberg/blob/main/ARCHITECTURE.md) in the repository.
+Writes (adding datasets, syncing, removing tables) happen through the `faceberg` CLI or Python API, not the REST server.
