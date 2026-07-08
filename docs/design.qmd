@@ -178,5 +178,6 @@ The Space exposes a read-only subset of the Iceberg REST catalog spec:
 | `HEAD /v1/namespaces/{ns}` | Check if a namespace exists |
 | `GET /v1/namespaces/{ns}/tables` | List tables |
 | `GET /v1/namespaces/{ns}/tables/{table}` | Load table metadata |
+| `HEAD /v1/namespaces/{ns}/tables/{table}` | Check if a table exists |
 
 Writes (adding datasets, syncing, removing tables) happen through the `faceberg` CLI or Python API, not the REST server.
