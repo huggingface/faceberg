@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, List, Optional, Set, Union
 from urllib.parse import urlparse
 
-from huggingface_hub import CommitOperationAdd, CommitOperationDelete, HfApi, HfFileSystem
+from huggingface_hub import CommitOperationAdd, CommitOperationDelete, HfApi, HfFileSystem, get_token
 from huggingface_hub.errors import RemoteEntryNotFoundError
 from pyiceberg.catalog import Catalog, PropertiesUpdateSummary
 from pyiceberg.exceptions import (
@@ -1532,6 +1532,26 @@ def _looks_like_local_path(uri: str) -> bool:
     return Path(uri).is_dir() or uri in (".", "..") or uri.startswith(("./", "../", "/", "~/"))
 
 
+def _resolve_hf_token(hf_token: Optional[str]) -> Optional[str]:
+    """Resolve HuggingFace token with fallback from ~/.cache/huggingface/token.
+
+    Checks in order:
+    1. Explicit hf_token argument
+    2. HF_TOKEN environment variable (via huggingface_hub.get_token)
+    3. ~/.cache/huggingface/token file (via huggingface_hub.get_token)
+
+    Args:
+        hf_token: Explicitly provided token (may be None)
+
+    Returns:
+        Resolved token string or None
+    """
+    if hf_token:
+        return hf_token
+
+    return get_token()
+
+
 def catalog(
     uri: str, *, hf_token: Optional[str] = None, **properties: str
 ) -> Union[LocalCatalog, RemoteCatalog]:
@@ -1564,6 +1584,9 @@ def catalog(
         >>> # Remote catalog on HuggingFace Hub (spaces)
         >>> cat = catalog("hf://spaces/org/repo", hf_token="hf_...")
     """
+    # Resolve token with fallback chain: arg > env > ~/.cache/huggingface/token
+    resolved_token = _resolve_hf_token(hf_token)
+
     if uri.startswith("hf://"):
         # HuggingFace Hub with explicit protocol
         # Extract repo name from URI for catalog name
@@ -1573,10 +1596,10 @@ def catalog(
             hf_repo = parts[1]  # org/repo
         else:
             hf_repo = uri
-        return RemoteCatalog(name=hf_repo, uri=uri, hf_token=hf_token, **properties)
+        return RemoteCatalog(name=hf_repo, uri=uri, hf_token=resolved_token, **properties)
     elif uri.startswith("file://"):
         # Local catalog with explicit file:// protocol
-        return LocalCatalog(name=uri, uri=uri, hf_token=hf_token, **properties)
+        return LocalCatalog(name=uri, uri=uri, hf_token=resolved_token, **properties)
     elif _looks_like_local_path(uri):
         # Local catalog with directory path - convert to file:// URI
         # Convert to absolute path and file:// URI
@@ -1585,10 +1608,10 @@ def catalog(
         # file:// URI format: file:// + empty host + absolute path
         # For /path/to/file -> file:///path/to/file (3 slashes total)
         file_uri = f"file://{path_str}"
-        return LocalCatalog(name=uri, uri=file_uri, hf_token=hf_token, **properties)
+        return LocalCatalog(name=uri, uri=file_uri, hf_token=resolved_token, **properties)
     else:
         # Assume it's a HuggingFace repo ID (org/repo format)
-        return RemoteCatalog(name=uri, uri=f"hf://spaces/{uri}", hf_token=hf_token, **properties)
+        return RemoteCatalog(name=uri, uri=f"hf://spaces/{uri}", hf_token=resolved_token, **properties)
 
 
 # Alias for main API
