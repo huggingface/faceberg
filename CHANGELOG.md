@@ -3,7 +3,7 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## Unreleased
+## v0.4.0 - 2026-07-10
 
 ### Added
 
@@ -42,6 +42,15 @@ All notable changes to this project are documented here. Format loosely follows
   huggingface_hub 1.22.0, pyarrow 24.0.0, datasets 5.0.0, fsspec 2026.4.0).
 - `pyproject.toml`'s `testpaths = ["tests"]` pointed at a nonexistent
   directory; tests live in `faceberg/tests/`.
+- `faceberg <path> init` failed on a local catalog path that didn't exist yet
+  (e.g. the README's own `faceberg ./mycatalog init`) — `catalog()` decided
+  local vs. remote via `Path(uri).is_dir()`, which is `False` for a
+  not-yet-created directory, so it fell through to the "assume HF repo id"
+  branch and crashed with a confusing `HFValidationError`. It now also
+  recognizes path-like prefixes (`./`, `../`, `/`, `~/`).
+- The README's raw DuckDB `ATTACH` example was missing the `ENDPOINT` option
+  required by the current duckdb iceberg extension; copy-pasting it verbatim
+  failed.
 
 ## v0.3.0 and earlier
 
