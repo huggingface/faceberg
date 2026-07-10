@@ -19,6 +19,10 @@ test:
 cov:
 	pytest faceberg/tests/ --cov=faceberg --cov-report=xml --cov-report=term-missing -v
 
+# Render the CLI demo (requires vhs: brew install vhs)
+demo:
+	vhs demo.tape
+
 # Build distribution packages
 build:
 	python -m build

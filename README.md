@@ -1,4 +1,4 @@
-![Faceberg](https://github.com/kszucs/faceberg/blob/main/faceberg.png?raw=true)
+![Faceberg](https://github.com/huggingface/faceberg/blob/main/faceberg.png?raw=true)
 
 # Faceberg
 
@@ -8,6 +8,8 @@ Faceberg maps HuggingFace datasets to Apache Iceberg tables. Your catalog metada
 
 > [!NOTE]
 > Faceberg is early-stage, alpha-quality software — APIs and CLI flags may still evolve between releases. See [CHANGELOG.md](CHANGELOG.md) for what's landed so far.
+
+![Faceberg demo](https://github.com/huggingface/faceberg/blob/main/demo.gif?raw=true)
 
 ## Installation
 
@@ -202,6 +204,12 @@ result = conn.execute("SELECT * FROM cat.stanfordnlp.imdb LIMIT 5").fetchdf()
 
 To make your catalog private, set the underlying HuggingFace Space/dataset/Bucket to private.
 
+### Browse it in your browser
+
+Every deployed catalog Space also serves a web UI at its own URL — no install
+needed. Visit `https://user-mycatalog.hf.space` to browse namespaces and
+tables, and run SQL directly against a DuckDB-WASM shell in the page.
+
 ## Documentation
 
 **[Read the docs →](https://faceberg.kszucs.dev/)**
@@ -216,7 +224,7 @@ To make your catalog private, set the underlying HuggingFace Space/dataset/Bucke
 ## Development
 
 ```bash
-git clone https://github.com/kszucs/faceberg
+git clone https://github.com/huggingface/faceberg
 cd faceberg
 pip install -e '.[dev]'
 ```
