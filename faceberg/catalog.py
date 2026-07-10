@@ -512,7 +512,11 @@ class BaseCatalog(Catalog):
         except KeyError:
             raise NoSuchNamespaceError(f"Namespace {namespace} does not exist")
 
-        return [Identifier(*identifier, k) for k in namespace]
+        return [
+            Identifier((*identifier, k))
+            for k, v in namespace.items()
+            if isinstance(v, cfg.Namespace)
+        ]
 
     def load_namespace_properties(self, _namespace: Union[str, Identifier]) -> Properties:
         """Load namespace properties.
@@ -1519,6 +1523,15 @@ class RemoteCatalog(BaseCatalog):
         return self._hf_repo_type
 
 
+def _looks_like_local_path(uri: str) -> bool:
+    """Whether a bare (non hf://, non file://) URI should be treated as a local path.
+
+    Path-like prefixes are checked in addition to `is_dir()` so a not-yet-created
+    directory (e.g. during `init`) is still recognized as local instead of a HF repo id.
+    """
+    return Path(uri).is_dir() or uri in (".", "..") or uri.startswith(("./", "../", "/", "~/"))
+
+
 def catalog(
     uri: str, *, hf_token: Optional[str] = None, **properties: str
 ) -> Union[LocalCatalog, RemoteCatalog]:
@@ -1564,10 +1577,10 @@ def catalog(
     elif uri.startswith("file://"):
         # Local catalog with explicit file:// protocol
         return LocalCatalog(name=uri, uri=uri, hf_token=hf_token, **properties)
-    elif Path(uri).is_dir():
+    elif _looks_like_local_path(uri):
         # Local catalog with directory path - convert to file:// URI
         # Convert to absolute path and file:// URI
-        abs_path = Path(uri).resolve()
+        abs_path = Path(uri).expanduser().resolve()
         path_str = abs_path.as_posix()
         # file:// URI format: file:// + empty host + absolute path
         # For /path/to/file -> file:///path/to/file (3 slashes total)

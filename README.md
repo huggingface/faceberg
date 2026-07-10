@@ -189,7 +189,13 @@ import duckdb
 
 conn = duckdb.connect()
 conn.execute("INSTALL iceberg; LOAD iceberg")
-conn.execute("ATTACH 'https://user-mycatalog.hf.space' AS cat (TYPE ICEBERG)")
+conn.execute("""
+    ATTACH 'https://user-mycatalog.hf.space' AS cat (
+        TYPE ICEBERG,
+        ENDPOINT 'https://user-mycatalog.hf.space',
+        AUTHORIZATION_TYPE 'none'
+    )
+""")
 
 result = conn.execute("SELECT * FROM cat.stanfordnlp.imdb LIMIT 5").fetchdf()
 ```
