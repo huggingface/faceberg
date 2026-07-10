@@ -57,13 +57,16 @@ def add(ctx, dataset, table, config):
     By default, the table identifier is inferred from the dataset:
     org/repo -> namespace 'org', table 'repo' (identifier: org.repo)
 
+    \b
     Examples:
         # Add with inferred identifier (deepmind.code_contests)
         faceberg add deepmind/code_contests
 
+    \b
         # Add with explicit identifier
         faceberg add deepmind/code_contests --table myns.mytable
 
+    \b
         # Add with non-default config
         faceberg add squad --config plain_text --table default.squad
     """
@@ -111,6 +114,7 @@ def sync(ctx, table_name, tree_view):
     creates initial metadata and namespaces on-demand. For existing tables,
     checks if dataset revision has changed and skips if already up-to-date.
 
+    \b
     Example:
         faceberg catalog.db sync
         faceberg catalog.db sync namespace1.table1
@@ -145,18 +149,20 @@ def init(ctx, config_path, sync):
     For local catalogs, creates the directory and faceberg.yml file.
     For remote catalogs (HuggingFace), creates a new dataset repository.
 
-    If a config file is provided via --config/-c, the catalog will be populated
-    with the tables defined in that file. If no config is specified, looks for
-    faceberg.yml in the current directory. If neither is found, creates an
-    empty catalog.
+    If a CONFIG_PATH is provided, the catalog will be populated with the
+    tables defined in that file. If no path is given, looks for faceberg.yml
+    in the current directory. If neither is found, creates an empty catalog.
 
+    \b
     Example:
         # Initialize with explicit config file
         faceberg catalog.db init tables.yml
 
+    \b
         # Initialize with auto-discovered config (looks for ./faceberg.yml)
         faceberg catalog.db init
 
+    \b
         # Initialize remote catalog (creates HF dataset repo)
         export HF_TOKEN=your_token
         faceberg hf://datasets/user/catalog init tables.yml
@@ -216,6 +222,7 @@ def init(ctx, config_path, sync):
 def list_tables(ctx):
     """List all tables in catalog.
 
+    \b
     Example:
         faceberg catalog.db list
     """
@@ -235,6 +242,7 @@ def info(ctx, table_name):
 
     Displays schema, partitioning, current snapshot, and data location.
 
+    \b
     Example:
         faceberg catalog.db info default.dataset1
     """
@@ -262,6 +270,7 @@ def scan(ctx, table_name, limit):
     Performs a simple scan operation to test table querying and displays
     the first few rows as a quick verification that the table is readable.
 
+    \b
     Example:
         faceberg catalog.db scan default.imdb
         faceberg catalog.db scan default.imdb --limit=10
@@ -309,13 +318,16 @@ def remove(ctx, identifier, yes):
     Automatically detects whether the identifier is a table (namespace.table)
     or a namespace. For namespaces, they must be empty before removal.
 
+    \b
     Examples:
         # Remove a table
         faceberg catalog.db remove default.dataset1
 
+    \b
         # Remove a namespace (must be empty)
         faceberg catalog.db remove myns
 
+    \b
         # Skip confirmation prompt
         faceberg catalog.db remove default.dataset1 --yes
     """
@@ -387,13 +399,16 @@ def quack(ctx, endpoint):
     connects to the Space's REST endpoint. For local catalogs, connects to
     localhost:8181 by default.
 
+    \b
     Examples:
         # Connect to remote catalog (auto-detects Space URL)
         faceberg user/catalog quack
 
+    \b
         # Connect to local REST server (uses localhost:8181 by default)
         faceberg /tmp/catalog quack
 
+    \b
         # Connect to custom endpoint
         faceberg /tmp/catalog quack --endpoint http://localhost:9000
     """
@@ -438,21 +453,26 @@ def serve(ctx, host, port, reload, prefix):
     Exposes the catalog via HTTP endpoints following the Apache Iceberg
     REST catalog specification. Supports both LocalCatalog and RemoteCatalog.
 
+    \b
     The server provides read-only operations:
     - List and load namespaces
     - List and load tables
     - Check existence of namespaces and tables
 
+    \b
     Examples:
         # Serve local catalog
         faceberg /path/to/catalog serve --port 8181
 
+    \b
         # Serve remote catalog on HuggingFace Hub
         faceberg hf://datasets/org/repo serve --token $HF_TOKEN
 
+    \b
         # Enable auto-reload for development
         faceberg /tmp/catalog serve --reload
 
+    \b
         # Use custom URL prefix
         faceberg /tmp/catalog serve --prefix my-catalog
     """
