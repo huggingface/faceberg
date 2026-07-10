@@ -19,18 +19,27 @@ Requires Python 3.10+. The REST catalog server (`faceberg serve`) is included by
 
 ## Prerequisites
 
-Get a token from [HuggingFace Settings](https://huggingface.co/settings/tokens) and export it:
+A HuggingFace token is required for remote catalogs (`user/repo`, `hf://...`). Local catalogs (plain paths) don't need one.
+
+The token is automatically discovered from the default cache (`~/.cache/huggingface/token`), so no environment variable is needed. You can also pass it explicitly via the CLI or Python API, or set `HF_TOKEN` as a fallback.
+
+Get a token from [HuggingFace Settings](https://huggingface.co/settings/tokens) and log in:
+
+```bash
+hf auth login
+```
+
+Or export it manually:
 
 ```bash
 export HF_TOKEN=your_huggingface_token
 ```
 
-The token is only required for remote catalogs (`user/repo`, `hf://...`). Local catalogs (plain paths) don't need one.
-
 ## Quick Start
 
 ```bash
 # Create a catalog on HuggingFace Hub (deploys a Space with a REST API)
+# No HF_TOKEN needed — automatically discovered from ~/.cache/huggingface/token
 faceberg user/mycatalog init
 
 # Add datasets — table identifier is inferred (org.repo) unless --table is given

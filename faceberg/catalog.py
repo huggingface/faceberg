@@ -10,7 +10,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, List, Optional, Set, Union
 from urllib.parse import urlparse
 
-from huggingface_hub import CommitOperationAdd, CommitOperationDelete, HfApi, HfFileSystem, get_token
+from huggingface_hub import (
+    CommitOperationAdd,
+    CommitOperationDelete,
+    HfApi,
+    HfFileSystem,
+    get_token,
+)
 from huggingface_hub.errors import RemoteEntryNotFoundError
 from pyiceberg.catalog import Catalog, PropertiesUpdateSummary
 from pyiceberg.exceptions import (
@@ -1611,7 +1617,12 @@ def catalog(
         return LocalCatalog(name=uri, uri=file_uri, hf_token=resolved_token, **properties)
     else:
         # Assume it's a HuggingFace repo ID (org/repo format)
-        return RemoteCatalog(name=uri, uri=f"hf://spaces/{uri}", hf_token=resolved_token, **properties)
+        return RemoteCatalog(
+            name=uri,
+            uri=f"hf://spaces/{uri}",
+            hf_token=resolved_token,
+            **properties,
+        )
 
 
 # Alias for main API
