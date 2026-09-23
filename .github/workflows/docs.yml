@@ -8,17 +8,17 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
+permissions: {}
+
 jobs:
   build:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +47,9 @@ jobs:
           path: docs/_site
 
   deploy:
+    permissions:
+      id-token: write
+      pages: write
     if: github.ref_type == 'tag'
     needs: build
     runs-on: ubuntu-latest
