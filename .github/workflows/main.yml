@@ -8,8 +8,12 @@ on:
   pull_request:
     branches: [main]
 
+permissions: {}
+
 jobs:
   lint:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +36,8 @@ jobs:
         run: just check
 
   test:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -69,6 +75,8 @@ jobs:
         run: just test
 
   build:
+    permissions:
+      contents: read
     name: dist
     runs-on: ubuntu-latest
 
