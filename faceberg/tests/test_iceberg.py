@@ -492,6 +492,26 @@ class TestManifestEntries:
         # All entries visible should be ADDED (1) or EXISTING (0)
         statuses = entries["status"].to_pylist()
         assert all(s in (0, 1) for s in statuses)
+    
+    def test_manifest_is_readable_after_write(
+        self, tmp_path, parquet_files, arrow_schema, io
+    ):
+        metadata = write_snapshot(
+            files=parquet_files,
+            schema=arrow_schema,
+            current_metadata=None,
+            output_dir=tmp_path,
+            base_uri=f"file://{tmp_path}",
+            properties={},
+            progress_callback=noop_progress_callback,
+            include_split_column=False,
+            io=io,
+        )
+
+        metadata_file = tmp_path / "metadata" / "v1.metadata.json"
+        table = StaticTable.from_metadata(str(metadata_file))
+
+        assert len(table.inspect.entries()) == len(parquet_files)
 
 
 class TestDiffSnapshotFiles:

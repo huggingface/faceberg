@@ -456,7 +456,7 @@ def write_manifest(
             )
             writer.add_entry(entry)
             entries.append(entry)
-        manifest = writer.to_manifest_file()
+    manifest = writer.to_manifest_file()
 
     manifest_file = ManifestFile.from_args(
         manifest_path=manifest_uri,
