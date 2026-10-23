@@ -493,10 +493,8 @@ class TestManifestEntries:
         # All entries visible should be ADDED (1) or EXISTING (0)
         statuses = entries["status"].to_pylist()
         assert all(s in (0, 1) for s in statuses)
-    
-    def test_manifest_length_matches_file_on_disk(
-        self, tmp_path, parquet_files, arrow_schema, io
-    ):
+
+    def test_manifest_length_matches_file_on_disk(self, tmp_path, parquet_files, arrow_schema, io):
         write_snapshot(
             files=parquet_files,
             schema=arrow_schema,
