@@ -20,10 +20,7 @@ def dataset_builder_safe(
     config: str,
     token: Optional[str] = None,
 ):
-    """Load dataset builder while avoiding picking up local files.
-
-    Changes to a temporary directory before loading to ensure the datasets
-    library doesn't pick up local files in the current directory.
+    """Load a Hugging Face dataset builder using an explicit Hub URI.
 
     Args:
         repo_id: HuggingFace dataset repository ID
@@ -31,21 +28,16 @@ def dataset_builder_safe(
         token: Optional HuggingFace API token
 
     Returns:
-        Dataset builder object
+        A dataset builder for the specified repository and configuration.
 
     Raises:
         Exception: If loading fails
     """
-    original_cwd = os.getcwd()
-
-    try:
-        # Change to a temporary directory to avoid dataset library picking up local files
-        with tempfile.TemporaryDirectory() as tmpdir:
-            os.chdir(tmpdir)
-            return load_dataset_builder(repo_id, config, token=token)
-    finally:
-        # Always restore the original directory
-        os.chdir(original_cwd)
+    return load_dataset_builder(
+        f"hf://datasets/{repo_id}",
+        config,
+        token=token,
+    )
 
 
 def dataset_builder_from_parquet_export(

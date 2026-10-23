@@ -69,20 +69,27 @@ def test_dataset_info_creation():
     assert info.files[0].uri == "hf://datasets/squad@abc123/train-00000.parquet"
 
 
-def test_dataset_builder_safe_changes_directory(tmp_path):
-    """Test that dataset_builder_safe changes to temp directory."""
+def test_dataset_builder_safe_uses_hub_uri():
+    """Test that dataset_builder_safe uses an explicit Hugging Face Hub URI."""
     original_cwd = os.getcwd()
 
     with patch("faceberg.discover.load_dataset_builder") as mock_load:
         mock_builder = MagicMock()
         mock_load.return_value = mock_builder
 
-        result = dataset_builder_safe("squad", "plain_text", token="test_token")
+        result = dataset_builder_safe(
+            "squad",
+            "plain_text",
+            token="test_token",
+        )
 
-        # Should be back in original directory
         assert os.getcwd() == original_cwd
         assert result == mock_builder
-        mock_load.assert_called_once_with("squad", "plain_text", token="test_token")
+        mock_load.assert_called_once_with(
+            "hf://datasets/squad",
+            "plain_text",
+            token="test_token",
+        )
 
 
 def test_dataset_builder_safe_restores_directory_on_error(tmp_path):
