@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import os
 import shutil
 from pathlib import Path
 
@@ -493,10 +494,10 @@ class TestManifestEntries:
         statuses = entries["status"].to_pylist()
         assert all(s in (0, 1) for s in statuses)
     
-    def test_manifest_is_readable_after_write(
+    def test_manifest_length_matches_file_on_disk(
         self, tmp_path, parquet_files, arrow_schema, io
     ):
-        metadata = write_snapshot(
+        write_snapshot(
             files=parquet_files,
             schema=arrow_schema,
             current_metadata=None,
@@ -510,6 +511,19 @@ class TestManifestEntries:
 
         metadata_file = tmp_path / "metadata" / "v1.metadata.json"
         table = StaticTable.from_metadata(str(metadata_file))
+
+        manifests = table.current_snapshot().manifests(table.io)
+        assert len(manifests) >= 1
+
+        for manifest in manifests:
+            path = manifest.manifest_path.removeprefix("file://")
+            on_disk = os.path.getsize(path)
+
+            # Recorded length must reflect the fully flushed file
+            assert manifest.manifest_length == on_disk
+            assert manifest.manifest_length > 0
+
+            assert manifest.added_files_count == len(parquet_files)
 
         assert len(table.inspect.entries()) == len(parquet_files)
 
