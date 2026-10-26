@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from datasets import Features, Value
 
-from faceberg.discover import DatasetInfo, ParquetFile, dataset_builder_safe, discover_dataset
+from faceberg.discover import DatasetInfo, ParquetFile, discover_dataset
 
 
 def test_parquet_file_creation():
@@ -68,26 +68,6 @@ def test_dataset_info_creation():
     assert info.files[0].uri == "hf://datasets/squad@abc123/train-00000.parquet"
 
 
-def test_dataset_builder_safe_uses_hub_uri():
-    """Test that dataset_builder_safe uses an explicit Hugging Face Hub URI."""
-    with patch("faceberg.discover.load_dataset_builder") as mock_load:
-        mock_builder = MagicMock()
-        mock_load.return_value = mock_builder
-
-        result = dataset_builder_safe(
-            "squad",
-            "plain_text",
-            token="test_token",
-        )
-
-        assert result == mock_builder
-        mock_load.assert_called_once_with(
-            "hf://datasets/squad",
-            "plain_text",
-            token="test_token",
-        )
-
-
 def test_discover_dataset_basic():
     """Test basic dataset discovery with mocked APIs."""
     # Mock builder
@@ -109,13 +89,16 @@ def test_discover_dataset_basic():
     mock_dataset_info = MagicMock()
     mock_dataset_info.siblings = [mock_sibling]
 
-    with patch("faceberg.discover.dataset_builder_safe", return_value=mock_builder):
+    with patch("faceberg.discover.load_dataset_builder", return_value=mock_builder) as mock_load:
         with patch("faceberg.discover.HfApi") as mock_api_class:
             mock_api = MagicMock()
             mock_api.dataset_info.return_value = mock_dataset_info
             mock_api_class.return_value = mock_api
 
             result = discover_dataset("squad", "plain_text", token="test_token")
+
+    # Builder is loaded via hf:// so local directories named like the repo are ignored
+    mock_load.assert_called_once_with("hf://datasets/squad", "plain_text", token="test_token")
 
     # Verify result
     assert result.repo_id == "squad"
@@ -153,7 +136,7 @@ def test_discover_dataset_multiple_splits():
     mock_dataset_info = MagicMock()
     mock_dataset_info.siblings = mock_siblings
 
-    with patch("faceberg.discover.dataset_builder_safe", return_value=mock_builder):
+    with patch("faceberg.discover.load_dataset_builder", return_value=mock_builder):
         with patch("faceberg.discover.HfApi") as mock_api_class:
             mock_api = MagicMock()
             mock_api.dataset_info.return_value = mock_dataset_info
@@ -191,7 +174,7 @@ def test_discover_dataset_empty():
     mock_dataset_info = MagicMock()
     mock_dataset_info.siblings = []
 
-    with patch("faceberg.discover.dataset_builder_safe", return_value=mock_builder):
+    with patch("faceberg.discover.load_dataset_builder", return_value=mock_builder):
         with patch("faceberg.discover.HfApi") as mock_api_class:
             mock_api = MagicMock()
             mock_api.dataset_info.return_value = mock_dataset_info
@@ -221,7 +204,7 @@ def test_discover_dataset_missing_file_metadata():
     mock_dataset_info = MagicMock()
     mock_dataset_info.siblings = []  # No files in metadata
 
-    with patch("faceberg.discover.dataset_builder_safe", return_value=mock_builder):
+    with patch("faceberg.discover.load_dataset_builder", return_value=mock_builder):
         with patch("faceberg.discover.HfApi") as mock_api_class:
             mock_api = MagicMock()
             mock_api.dataset_info.return_value = mock_dataset_info
@@ -233,8 +216,8 @@ def test_discover_dataset_missing_file_metadata():
 
 def test_discover_dataset_invalid_dataset():
     """Test that invalid dataset raises ValueError."""
-    with patch("faceberg.discover.dataset_builder_safe") as mock_safe:
-        mock_safe.side_effect = Exception("Dataset not found")
+    with patch("faceberg.discover.load_dataset_builder") as mock_load:
+        mock_load.side_effect = Exception("Dataset not found")
 
         with pytest.raises(ValueError, match="not found or not accessible"):
             discover_dataset("invalid", "config")
@@ -242,8 +225,8 @@ def test_discover_dataset_invalid_dataset():
 
 def test_discover_dataset_invalid_config():
     """Test that invalid config raises ValueError."""
-    with patch("faceberg.discover.dataset_builder_safe") as mock_safe:
-        mock_safe.side_effect = Exception("Config 'invalid' not found")
+    with patch("faceberg.discover.load_dataset_builder") as mock_load:
+        mock_load.side_effect = Exception("Config 'invalid' not found")
 
         with pytest.raises(ValueError, match="not found or not accessible"):
             discover_dataset("squad", "invalid")

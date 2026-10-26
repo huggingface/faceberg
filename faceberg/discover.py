@@ -14,31 +14,6 @@ from datasets.load import HubDatasetModuleFactoryWithParquetExport, get_dataset_
 from huggingface_hub import HfApi
 
 
-def dataset_builder_safe(
-    repo_id: str,
-    config: str,
-    token: Optional[str] = None,
-):
-    """Load a Hugging Face dataset builder using an explicit Hub URI.
-
-    Args:
-        repo_id: HuggingFace dataset repository ID
-        config: Configuration name
-        token: Optional HuggingFace API token
-
-    Returns:
-        A dataset builder for the specified repository and configuration.
-
-    Raises:
-        Exception: If loading fails
-    """
-    return load_dataset_builder(
-        f"hf://datasets/{repo_id}",
-        config,
-        token=token,
-    )
-
-
 def dataset_builder_from_parquet_export(
     repo_id: str,
     config: str,
@@ -151,7 +126,8 @@ def discover_dataset(
     # Step 1: Load dataset builder
     progress(state="in_progress", percent=0, stage="Loading dataset builder")
     try:
-        builder = dataset_builder_safe(repo_id, config=config, token=token)
+        # hf:// makes datasets skip local directories named like repo_id
+        builder = load_dataset_builder(f"hf://datasets/{repo_id}", config, token=token)
     except Exception as e:
         raise ValueError(
             f"Dataset {repo_id} config {config} not found or not accessible: {e}"
