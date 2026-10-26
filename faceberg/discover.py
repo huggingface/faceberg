@@ -6,46 +6,12 @@ datasets to Iceberg tables.
 """
 
 import os
-import tempfile
 from dataclasses import dataclass
 from typing import Callable, List, Optional
 
 from datasets import DownloadConfig, Features, StreamingDownloadManager, load_dataset_builder
 from datasets.load import HubDatasetModuleFactoryWithParquetExport, get_dataset_builder_class
 from huggingface_hub import HfApi
-
-
-def dataset_builder_safe(
-    repo_id: str,
-    config: str,
-    token: Optional[str] = None,
-):
-    """Load dataset builder while avoiding picking up local files.
-
-    Changes to a temporary directory before loading to ensure the datasets
-    library doesn't pick up local files in the current directory.
-
-    Args:
-        repo_id: HuggingFace dataset repository ID
-        config: Configuration name
-        token: Optional HuggingFace API token
-
-    Returns:
-        Dataset builder object
-
-    Raises:
-        Exception: If loading fails
-    """
-    original_cwd = os.getcwd()
-
-    try:
-        # Change to a temporary directory to avoid dataset library picking up local files
-        with tempfile.TemporaryDirectory() as tmpdir:
-            os.chdir(tmpdir)
-            return load_dataset_builder(repo_id, config, token=token)
-    finally:
-        # Always restore the original directory
-        os.chdir(original_cwd)
 
 
 def dataset_builder_from_parquet_export(
@@ -160,7 +126,8 @@ def discover_dataset(
     # Step 1: Load dataset builder
     progress(state="in_progress", percent=0, stage="Loading dataset builder")
     try:
-        builder = dataset_builder_safe(repo_id, config=config, token=token)
+        # hf:// makes datasets skip local directories named like repo_id
+        builder = load_dataset_builder(f"hf://datasets/{repo_id}", config, token=token)
     except Exception as e:
         raise ValueError(
             f"Dataset {repo_id} config {config} not found or not accessible: {e}"
