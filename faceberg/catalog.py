@@ -888,6 +888,29 @@ class BaseCatalog(Catalog):
         """List views in namespace."""
         raise NotImplementedError("Views not supported")
 
+    def load_view(self, identifier: Union[str, Identifier]) -> Any:
+        """Load a view."""
+        raise NotImplementedError("Views not supported")
+
+    def register_view(self, identifier: Union[str, Identifier], metadata_location: str) -> Any:
+        """Register a view."""
+        raise NotImplementedError("Views not supported")
+
+    def create_view(
+        self,
+        identifier: Union[str, Identifier],
+        schema: Union[Schema, "pa.Schema"],
+        view_version: Any,
+        location: Optional[str] = None,
+        properties: Properties = EMPTY_DICT,
+    ) -> Any:
+        """Create a view."""
+        raise NotImplementedError("Views not supported")
+
+    def supports_server_side_planning(self) -> bool:
+        """Scans are planned client-side from the manifests."""
+        return False
+
     def create_table_transaction(
         self,
         identifier: Union[str, Identifier],

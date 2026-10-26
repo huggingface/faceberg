@@ -991,7 +991,7 @@ class TestRestCatalogMetadata:
 class TestUnsupportedOperations:
     """Tests for operations that are not yet supported."""
 
-    def test_view_operations_not_supported(self, catalog):
+    def test_view_operations_not_supported(self, catalog, test_schema):
         """Test that view operations are not supported."""
         # view_exists should raise NotImplementedError
         with pytest.raises(NotImplementedError):
@@ -1004,6 +1004,22 @@ class TestUnsupportedOperations:
         # drop_view should raise NotImplementedError
         with pytest.raises(NotImplementedError):
             catalog.drop_view("default.test_view")
+
+        # load_view should raise NotImplementedError
+        with pytest.raises(NotImplementedError):
+            catalog.load_view("default.test_view")
+
+        # register_view should raise NotImplementedError
+        with pytest.raises(NotImplementedError):
+            catalog.register_view("default.test_view", "metadata.json")
+
+        # create_view should raise NotImplementedError
+        with pytest.raises(NotImplementedError):
+            catalog.create_view("default.test_view", test_schema, view_version=None)
+
+    def test_server_side_planning_not_supported(self, catalog):
+        """Test that scans are planned client-side."""
+        assert catalog.supports_server_side_planning() is False
 
 
 # =============================================================================

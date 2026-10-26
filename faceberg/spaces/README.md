@@ -70,6 +70,7 @@ table = catalog.load_table("namespace.table_name")
 
 # Query with DuckDB
 import duckdb
+
 duckdb.sql("SELECT * FROM iceberg_scan('table') LIMIT 10").show()
 ```
 
