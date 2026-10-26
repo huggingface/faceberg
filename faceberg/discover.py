@@ -6,7 +6,6 @@ datasets to Iceberg tables.
 """
 
 import os
-import tempfile
 from dataclasses import dataclass
 from typing import Callable, List, Optional
 
